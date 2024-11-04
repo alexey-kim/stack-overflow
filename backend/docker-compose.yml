@@ -1,0 +1,38 @@
+services:
+  postgres:
+    image: postgres:17
+    container_name: postgres17
+    restart: always
+    ports:
+      - ${DB_PORT}:5432
+    environment:
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_DATABASE}
+    volumes:
+      - ./pgdata:/var/lib/postgresql/data
+
+  app:
+    build: .
+    container_name: stack-overflow
+    restart: always
+    ports:
+      - ${PORT}:3002
+    environment:
+      NODE_ENV: ${NODE_ENV}
+      HOST: app
+      PORT: 3002
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_DATABASE: ${DB_DATABASE}
+      IS_DB_LOGGING_ENABLED: ${IS_DB_LOGGING_ENABLED}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRATION: ${JWT_EXPIRATION}
+      FILE_EXT: js
+    depends_on:
+      - postgres
+
+volumes:
+  pgdata:
